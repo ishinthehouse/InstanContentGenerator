@@ -141,7 +141,7 @@ function MainApp() {
     <div className="flex h-screen bg-[#f9fafb] overflow-hidden">
       {/* Desktop Sidebar */}
       <div 
-        className={`hidden md:block flex-shrink-0 transition-all duration-300 ease-in-out ${
+        className={`hidden md:block flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden ${
           isSidebarOpen ? 'w-64' : 'w-0'
         }`}
       >
