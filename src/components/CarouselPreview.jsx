@@ -2,13 +2,12 @@ import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Download, Shuffle, Film } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import {
-  computeSegmentBounds,
-  segmentIndexForFraction,
   renderFormattedVideo,
   downloadRawVideo,
   mimeToExtension,
   SEGMENT_LABELS,
 } from '../utils/videoExport';
+import { normalizeSlides, slidesToSegments, slideSlug } from '../utils/slideSchema';
 
 const FONTS = [
   { id: 'default', name: 'Default', family: '' },
@@ -18,8 +17,6 @@ const FONTS = [
   { id: 'oswald', name: 'Oswald', family: '"Oswald", sans-serif' },
   { id: 'playfair', name: 'Playfair', family: '"Playfair Display", serif' }
 ];
-
-const SLIDE_LABELS = ['Hook', 'Beat 1', 'Beat 2', 'Beat 3', 'CTA'];
 
 const SLIDE_STYLES = [
   {
@@ -319,34 +316,21 @@ export default function CarouselPreview({ content, photos }) {
   const [videoExport, setVideoExport] = useState(null); // { current, total, progress } while rendering video
   const scrollRef = useRef(null);
 
-  const script = content?.reels_script;
   const photoList = photos || [];
   const isVideoMode = !!photoList[0]?._isVideo;
 
-  const getText = (val) => typeof val === 'object' && val !== null ? val.text : val;
-  const getLabel = (val) => typeof val === 'object' && val !== null ? val.label : null;
+  // Canonical, variable-length slide list — handles both the new `slides` shape
+  // and any legacy `reels_script` content via the schema normalizer.
+  const slides = useMemo(() => normalizeSlides(content), [content]);
 
-  // Photo carousel beats (unchanged — always 5 fixed slides)
-  const slides = [
-    { text: getText(script?.hook), label: SLIDE_LABELS[0] },
-    { text: getText(script?.beat_1), label: SLIDE_LABELS[1] },
-    { text: getText(script?.beat_2), label: SLIDE_LABELS[2] },
-    { text: getText(script?.beat_3), label: SLIDE_LABELS[3] },
-    { text: getText(script?.cta), label: SLIDE_LABELS[4] },
-  ];
+  // Per-slide filesystem slugs (hook, beat-1, beat-2, cta, ...) for export naming
+  const slideSlugs = useMemo(() => {
+    let beat = 0;
+    return slides.map((s) => slideSlug(s, s.role === 'beat' ? beat++ : 0));
+  }, [slides]);
 
-  // Ordered, non-empty script segments used as the timed reel captions for videos
-  const scriptSegments = useMemo(
-    () =>
-      [
-        { text: getText(script?.hook), label: getLabel(script?.hook), styleIndex: 0 },
-        { text: getText(script?.beat_1), label: getLabel(script?.beat_1), styleIndex: 1 },
-        { text: getText(script?.beat_2), label: getLabel(script?.beat_2), styleIndex: 2 },
-        { text: getText(script?.beat_3), label: getLabel(script?.beat_3), styleIndex: 3 },
-        { text: getText(script?.cta), label: getLabel(script?.cta), styleIndex: 4 },
-      ].filter((s) => s.text && String(s.text).trim()),
-    [script?.hook, script?.beat_1, script?.beat_2, script?.beat_3, script?.cta]
-  );
+  // Ordered, non-empty caption segments used as the timed reel captions for videos
+  const scriptSegments = useMemo(() => slidesToSegments(slides), [slides]);
 
   // Divide the script across the selected videos (whole script if just one)
   const videoGroups = useMemo(
@@ -377,7 +361,7 @@ export default function CarouselPreview({ content, photos }) {
   }, [slideCount]);
 
   // All hooks are declared above this guard so hook order stays stable
-  if (!script || photoList.length === 0) return null;
+  if (slides.length === 0 || photoList.length === 0) return null;
 
   const handleReshuffle = () => {
     setShuffleSeed(Date.now());
@@ -425,7 +409,7 @@ export default function CarouselPreview({ content, photos }) {
 
           const namePart = isVideoMode
             ? `clip-${i + 1}${segCount > 1 ? `-part-${j + 1}` : ''}`
-            : `slide-${i + 1}-${SLIDE_LABELS[i].toLowerCase().replace(/\s+/g, '-')}`;
+            : `slide-${i + 1}-${slideSlugs[i] || 'slide'}`;
 
           const link = document.createElement('a');
           link.download = `instaforge-${namePart}.png`;
@@ -571,7 +555,7 @@ export default function CarouselPreview({ content, photos }) {
                   <SlideCard
                     photo={slidePhotos[i]}
                     text={slide.text}
-                    style={SLIDE_STYLES[i]}
+                    style={SLIDE_STYLES[slide.styleIndex] ?? SLIDE_STYLES[0]}
                     slideIndex={i}
                     isActive={i === currentSlide}
                     customFontFamily={customFontFamily}

@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
-import { AlignLeft, Camera, Film } from 'lucide-react';
+import { AlignLeft, Camera, Film, Layers } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
+import { MIN_SLIDE_COUNT, MAX_SLIDE_COUNT, DEFAULT_SLIDE_COUNT } from '../utils/slideSchema';
+
+const SLIDE_COUNT_OPTIONS = Array.from(
+  { length: MAX_SLIDE_COUNT - MIN_SLIDE_COUNT + 1 },
+  (_, i) => MIN_SLIDE_COUNT + i
+);
 
 export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos', onMediaModeChange }) {
   const { settings } = useSettings();
@@ -12,6 +18,7 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
     language: 'English',
     contentType: 'Educational',
     slideTextLength: 'medium',
+    slideCount: String(DEFAULT_SLIDE_COUNT),
   });
 
   // Update default tone when settings change, if the user hasn't overridden it yet
@@ -139,6 +146,20 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
             <option value="short">Short — punchy lines</option>
             <option value="medium">Medium — 1-2 sentences</option>
             <option value="detailed">Detailed — 2-3 sentences</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
+            <Layers className="w-3 h-3" />
+            Slides
+          </label>
+          <select name="slideCount" value={formData.slideCount} onChange={handleChange} className="w-full text-sm border border-gray-200 rounded-md p-2 focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta">
+            {SLIDE_COUNT_OPTIONS.map((n) => (
+              <option key={n} value={String(n)}>
+                {n} slides{n === DEFAULT_SLIDE_COUNT ? ' (default)' : ''}
+              </option>
+            ))}
           </select>
         </div>
       </div>

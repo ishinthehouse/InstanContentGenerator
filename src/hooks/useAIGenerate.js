@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSettings } from '../context/SettingsContext';
 import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
+import { DEFAULT_SLIDE_COUNT, MIN_SLIDE_COUNT, MAX_SLIDE_COUNT } from '../utils/slideSchema';
 
 export function useAIGenerate() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -9,7 +10,7 @@ export function useAIGenerate() {
   const [error, setError] = useState(null);
   const { settings } = useSettings();
 
-  const generateContent = async ({ topic, tone, ctaType, hashtagCount, language, contentType, slideTextLength = 'medium' }) => {
+  const generateContent = async ({ topic, tone, ctaType, hashtagCount, language, contentType, slideTextLength = 'medium', slideCount = DEFAULT_SLIDE_COUNT }) => {
     // Validate API key for selected provider
     if (settings.aiProvider === 'claude' && !settings.claudeKey) {
       setError('Please add your Claude API key in settings.');
@@ -36,10 +37,14 @@ export function useAIGenerate() {
     setGeneratedData(null);
 
     const slideTextGuide = {
-      short: 'Keep each reels_script field to a single punchy phrase or short sentence (under 10 words). Think bold, minimal, impactful.',
-      medium: 'Write 1-2 compelling sentences for each reels_script field (15-25 words). Balance brevity with substance.',
-      detailed: 'Write 2-3 rich, engaging sentences for each reels_script field (30-50 words). Go deep, add context, create gravitas.',
+      short: 'Keep each slide text to a single punchy phrase or short sentence (under 10 words). Think bold, minimal, impactful.',
+      medium: 'Write 1-2 compelling sentences for each slide text (15-25 words). Balance brevity with substance.',
+      detailed: 'Write 2-3 rich, engaging sentences for each slide text (30-50 words). Go deep, add context, create gravitas.',
     }[slideTextLength] || '';
+
+    // Clamp the requested slide count into the supported range.
+    const count = Math.max(MIN_SLIDE_COUNT, Math.min(MAX_SLIDE_COUNT, Number(slideCount) || DEFAULT_SLIDE_COUNT));
+    const beatCount = count - 2; // first slide is the hook, last is the CTA
 
     const promptText = `
 Topic: ${topic}
@@ -49,34 +54,26 @@ Hashtag Count: ${hashtagCount}
 Language: ${language}
 Content Type: ${contentType}
 Slide Text Length: ${slideTextLength}
+Number of slides: ${count}
 
 IMPORTANT TEXT LENGTH INSTRUCTION: ${slideTextGuide}
 
-Generate Instagram content for the above topic. Return ONLY a JSON object with this exact shape:
+Generate Instagram carousel/reel content for the above topic. The carousel must have EXACTLY ${count} slides in order:
+- Slide 1: role "hook" — a pattern-interrupt opener for the first 3 seconds.
+- Slides 2-${count - 1}: role "beat" — ${beatCount} distinct supporting points that build the narrative.
+- Slide ${count}: role "cta" — the closing call to action.
+
+Return ONLY a JSON object with this exact shape (no markdown, no commentary):
 {
   "caption": "string -- the post caption, no hashtags inside it",
-  "reels_script": {
-    "hook": {
-      "label": "string -- short engaging hook label (1-4 words, e.g. 'SECRET REVEALED', 'DID YOU KNOW?')",
-      "text": "string -- first 3 seconds, pattern interrupt opener. ${slideTextGuide}"
-    },
-    "beat_1": {
-      "label": "string -- short label for this point",
-      "text": "string -- ${slideTextGuide}"
-    },
-    "beat_2": {
-      "label": "string -- short label for this point",
-      "text": "string -- ${slideTextGuide}"
-    },
-    "beat_3": {
-      "label": "string -- short label for this point",
-      "text": "string -- ${slideTextGuide}"
-    },
-    "cta": {
-      "label": "string -- short call to action label (e.g. 'TAKE ACTION', 'NEXT STEPS')",
-      "text": "string -- closing call to action. ${slideTextGuide}"
+  "slides": [
+    {
+      "role": "hook | beat | cta",
+      "label": "string -- short engaging label, 1-4 words (e.g. 'DID YOU KNOW?', 'KEY INSIGHT', 'TAKE ACTION')",
+      "text": "string -- the slide copy. ${slideTextGuide}"
     }
-  },
+    -- repeat for all ${count} slides, first role 'hook', last role 'cta', the rest 'beat'
+  ],
   "pexels_keywords": ["keyword1", "keyword2", "keyword3"],
   "hashtags": {
     "niche": ["#tag1", "#tag2", ...],
@@ -99,7 +96,7 @@ Generate Instagram content for the above topic. Return ONLY a JSON object with t
 
         const msg = await anthropic.messages.create({
           model: "claude-3-5-sonnet-20241022",
-          max_tokens: 1500,
+          max_tokens: 3000, // headroom for up to 10 detailed slides
           system: systemPrompt,
           messages: [
             { role: "user", content: promptText }

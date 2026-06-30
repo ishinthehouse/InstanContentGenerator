@@ -246,7 +246,7 @@ function MainApp() {
                     isGenerating={isGenerating}
                     isSearching={isSearching}
                   />
-                  <ReelsScript script={currentContent.reels_script} />
+                  <ReelsScript content={currentContent} />
                 </>
               )}
             </div>

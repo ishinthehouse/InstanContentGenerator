@@ -1,8 +1,7 @@
 import html2canvas from 'html2canvas';
 import JSZip from 'jszip';
 import { renderFormattedVideo, mimeToExtension } from './videoExport';
-
-const SLIDE_LABELS = ['Hook', 'Beat 1', 'Beat 2', 'Beat 3', 'CTA'];
+import { normalizeSlides, slidesToSegments, slideSlug, slideDisplayLabel } from './slideSchema';
 
 const SLIDE_STYLES = [
   {
@@ -198,24 +197,17 @@ export async function exportBulkAsZip(results, onProgress) {
   const zip = new JSZip();
 
   const successfulResults = results.filter(r => r.content && !r.error && r.photos?.length > 0);
-  const totalSlides = successfulResults.length * 5;
+
+  // Normalize each result up front so the progress bar accounts for variable
+  // slide counts (no longer a hardcoded 5 per post).
+  const perResultSlides = successfulResults.map(r => normalizeSlides(r.content));
+  const totalSlides = perResultSlides.reduce((sum, s) => sum + s.length, 0);
   let doneSlides = 0;
 
   for (let ri = 0; ri < successfulResults.length; ri++) {
     const result = successfulResults[ri];
     const { content, photos, row } = result;
-    const script = content.reels_script;
-
-    const getText = (val) => typeof val === 'object' && val !== null ? val.text : val;
-    const getLabel = (val) => typeof val === 'object' && val !== null ? val.label : null;
-
-    const slides = [
-      { text: getText(script.hook),  label: SLIDE_LABELS[0], slug: 'hook'  },
-      { text: getText(script.beat_1), label: SLIDE_LABELS[1], slug: 'beat-1' },
-      { text: getText(script.beat_2), label: SLIDE_LABELS[2], slug: 'beat-2' },
-      { text: getText(script.beat_3), label: SLIDE_LABELS[3], slug: 'beat-3' },
-      { text: getText(script.cta),   label: SLIDE_LABELS[4], slug: 'cta'   },
-    ];
+    const slides = perResultSlides[ri];
 
     const assignedPhotos = assignPhotos(photos, slides.length);
 
@@ -230,17 +222,19 @@ export async function exportBulkAsZip(results, onProgress) {
     const folder = zip.folder(folderName);
 
     // Render and add each slide
+    let beatOrdinal = 0;
     for (let si = 0; si < slides.length; si++) {
       const slide = slides[si];
+      const slug = slideSlug(slide, slide.role === 'beat' ? beatOrdinal++ : 0);
       const photo = assignedPhotos[si];
       const photoUrl = photo?.src?.large2x || photo?.src?.large || photo?.src?.medium;
 
       if (!photoUrl) { doneSlides++; continue; }
 
       try {
-        const blob = await captureSlide(photoUrl, slide.text, SLIDE_STYLES[si]);
+        const blob = await captureSlide(photoUrl, slide.text, SLIDE_STYLES[slide.styleIndex] ?? SLIDE_STYLES[0]);
         if (blob) {
-          folder.file(`slide-${si + 1}-${slide.slug}.png`, blob);
+          folder.file(`slide-${si + 1}-${slug}.png`, blob);
         }
       } catch (err) {
         console.warn(`Failed to capture slide ${si + 1} for post ${ri + 1}:`, err);
@@ -256,6 +250,12 @@ export async function exportBulkAsZip(results, onProgress) {
       ...(content.hashtags?.broad || []),
     ].join(' ');
 
+    let txtBeat = 0;
+    const scriptLines = slides.map((s) => {
+      const label = slideDisplayLabel(s, s.role === 'beat' ? txtBeat++ : 0);
+      return `${label}: ${s.text}`;
+    });
+
     const contentTxt = [
       `INSTAFORGE — Post ${ri + 1}`,
       '='.repeat(40),
@@ -263,12 +263,8 @@ export async function exportBulkAsZip(results, onProgress) {
       'CAPTION',
       content.caption || '',
       '',
-      'REELS SCRIPT',
-      `Hook:   ${script.hook}`,
-      `Beat 1: ${script.beat_1}`,
-      `Beat 2: ${script.beat_2}`,
-      `Beat 3: ${script.beat_3}`,
-      `CTA:    ${script.cta}`,
+      'SCRIPT',
+      ...scriptLines,
       '',
       'HASHTAGS',
       allHashtags,
@@ -342,19 +338,10 @@ export async function exportBulkVideosAsZip(results, onProgress) {
   for (let ri = 0; ri < videoResults.length; ri++) {
     const result = videoResults[ri];
     const { content, photos, row } = result;
-    const script = content.reels_script;
 
-    const getText = (val) => typeof val === 'object' && val !== null ? val.text : val;
-    const getLabel = (val) => typeof val === 'object' && val !== null ? val.label : null;
-
-    // Build ordered non-empty script segments
-    const scriptSegments = [
-      { text: getText(script?.hook), label: getLabel(script?.hook), styleIndex: 0 },
-      { text: getText(script?.beat_1), label: getLabel(script?.beat_1), styleIndex: 1 },
-      { text: getText(script?.beat_2), label: getLabel(script?.beat_2), styleIndex: 2 },
-      { text: getText(script?.beat_3), label: getLabel(script?.beat_3), styleIndex: 3 },
-      { text: getText(script?.cta), label: getLabel(script?.cta), styleIndex: 4 },
-    ].filter((s) => s.text && String(s.text).trim());
+    // Ordered, non-empty caption segments from the canonical slide list
+    const slides = normalizeSlides(content);
+    const scriptSegments = slidesToSegments(slides);
 
     // Distribute segments across the video clips for this row
     const videoGroups = distributeSegments(scriptSegments, photos.length);
@@ -408,6 +395,12 @@ export async function exportBulkVideosAsZip(results, onProgress) {
       ...(content.hashtags?.broad || []),
     ].join(' ');
 
+    let txtBeat = 0;
+    const scriptLines = slides.map((s) => {
+      const label = slideDisplayLabel(s, s.role === 'beat' ? txtBeat++ : 0);
+      return `${label}: ${s.text}`;
+    });
+
     const contentTxt = [
       `INSTAFORGE — Post ${ri + 1} (Video)`,
       '='.repeat(40),
@@ -415,12 +408,8 @@ export async function exportBulkVideosAsZip(results, onProgress) {
       'CAPTION',
       content.caption || '',
       '',
-      'REELS SCRIPT',
-      `Hook:   ${script?.hook || ''}`,
-      `Beat 1: ${script?.beat_1 || ''}`,
-      `Beat 2: ${script?.beat_2 || ''}`,
-      `Beat 3: ${script?.beat_3 || ''}`,
-      `CTA:    ${script?.cta || ''}`,
+      'SCRIPT',
+      ...scriptLines,
       '',
       'HASHTAGS',
       allHashtags,
