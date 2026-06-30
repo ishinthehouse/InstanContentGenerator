@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { PanelLeft, HelpCircle } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { HelpCircle } from 'lucide-react';
 import { SettingsProvider } from './context/SettingsContext';
 import SettingsPanel from './components/SettingsPanel';
 import TopicForm from './components/TopicForm';
@@ -8,19 +8,16 @@ import PostPreview from './components/PostPreview';
 import ReelsScript from './components/ReelsScript';
 import CarouselPreview from './components/CarouselPreview';
 import ExportButtons from './components/ExportButtons';
-import HistorySidebar from './components/HistorySidebar';
 import BulkUpload from './components/BulkUpload';
 import PhotoFilterSelector from './components/PhotoFilterSelector';
 import GuideModal from './components/GuideModal';
 import { useAIGenerate } from './hooks/useAIGenerate';
 import { usePexelsSearch } from './hooks/usePexelsSearch';
-import { usePostHistory } from './hooks/usePostHistory';
 import { useBulkGenerate } from './hooks/useBulkGenerate';
 
 function MainApp() {
   const { generateContent, isGenerating, error: aiError } = useAIGenerate();
   const { searchPhotos, photos, isSearching, error: pexelsError, setPhotos } = usePexelsSearch();
-  const { history, addToHistory, clearHistory } = usePostHistory();
   const { processBulk, cancelBulk, clearResults, isProcessing, progress, results, bulkError } = useBulkGenerate();
 
   // Mode toggle
@@ -28,7 +25,6 @@ function MainApp() {
   const [mediaMode, setMediaMode] = useState('photos'); // 'photos' | 'videos'
 
   // UI state
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   // Active state
@@ -95,32 +91,7 @@ function MainApp() {
     }
   };
 
-  // Add to history when both content and at least one photo are selected
-  useEffect(() => {
-    if (currentContent && primaryPhoto) {
-      addToHistory({
-        id: Date.now().toString(),
-        timestamp: Date.now(),
-        topic: currentTopic,
-        content: currentContent,
-        photo: primaryPhoto,
-        photos: selectedPhotos,
-      });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPhotos]); // Intentionally only trigger on photo selection changes
 
-  const handleRestoreFromHistory = (post) => {
-    setCurrentTopic(post.topic);
-    setCurrentContent(post.content);
-    // Restore multi-select if available, otherwise wrap single photo
-    if (post.photos && post.photos.length > 0) {
-      setSelectedPhotos(post.photos);
-    } else if (post.photo) {
-      setSelectedPhotos([post.photo]);
-    }
-    setMode('single');
-  };
 
   // Handle selecting a result from bulk upload
   const handleSelectBulkResult = (result) => {
@@ -139,29 +110,11 @@ function MainApp() {
 
   return (
     <div className="flex h-screen bg-[#f9fafb] overflow-hidden">
-      {/* Desktop Sidebar */}
-      <div 
-        className={`hidden md:block flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden ${
-          isSidebarOpen ? 'w-64' : 'w-0'
-        }`}
-      >
-        <div className="w-64 h-full">
-          <HistorySidebar history={history} onRestore={handleRestoreFromHistory} onClear={clearHistory} />
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Top Header */}
         <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10 flex-shrink-0">
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="hidden md:flex p-2 -ml-2 text-gray-400 hover:text-dark hover:bg-gray-100 rounded-lg transition-colors"
-              title="Toggle sidebar"
-            >
-              <PanelLeft className="w-5 h-5" />
-            </button>
             <div>
               <h1 className="text-xl font-bold text-dark m-0 tracking-tight">InstaForge</h1>
               <p className="text-xs text-gray-500 hidden sm:block">Automated Instagram Content Creation</p>
@@ -301,10 +254,6 @@ function MainApp() {
           </div>
         </main>
         
-        {/* Mobile History Bottom Sheet (Simplified version for mobile layout constraint) */}
-        <div className="md:hidden border-t border-gray-200 bg-white h-48 overflow-y-auto">
-          <HistorySidebar history={history} onRestore={handleRestoreFromHistory} onClear={clearHistory} />
-        </div>
       </div>
       
       <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
