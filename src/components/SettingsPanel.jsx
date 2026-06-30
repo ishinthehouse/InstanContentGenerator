@@ -22,7 +22,7 @@ export default function SettingsPanel() {
       case 'claude':
         return (
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Claude API Key</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Claude API Key <span className="text-gray-400">(optional)</span></label>
             <input 
               type="password" 
               name="claudeKey"
@@ -36,7 +36,7 @@ export default function SettingsPanel() {
       case 'openai':
         return (
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">OpenAI API Key</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">OpenAI API Key <span className="text-gray-400">(optional)</span></label>
             <input 
               type="password" 
               name="openaiKey"
@@ -50,7 +50,7 @@ export default function SettingsPanel() {
       case 'gemini':
         return (
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Gemini API Key</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Gemini API Key <span className="text-gray-400">(optional)</span></label>
             <input 
               type="password" 
               name="geminiKey"
@@ -101,6 +101,11 @@ export default function SettingsPanel() {
             </div>
 
             {renderApiKeyInput()}
+
+            <p className="text-[11px] text-gray-500 leading-relaxed bg-gray-50 border border-gray-100 rounded-md p-2">
+              Leave the key blank to use the free hosted generator (daily limit).
+              Add your own key for unlimited generations and bulk processing.
+            </p>
 
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Pexels API Key</label>

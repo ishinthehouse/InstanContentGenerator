@@ -8,12 +8,100 @@ Each phase is built on its own `feature/*` branch and merged deliberately —
 
 ## Master plan (sequence)
 
-1. **Phase 1 — Slide schema migration** ✅ (this branch)
-2. Phase 2 — Backend proxy (server-side API keys, quotas, real URL repurposing)
+1. **Phase 1 — Slide schema migration** ✅ `feature/slide-schema-migration`
+2. **Phase 2 — Backend proxy** ✅ `feature/backend-proxy` (stacked on Phase 1)
 3. Phase 3 — Visual redesign (dark glassmorphic chrome, 3-column Plan/Produce/Polish)
 4. Phase 4 — Layout engine + brand kit (IndexedDB-backed assets)
 5. Phase 5 — Scoped editor upgrades (inline `contentEditable` text editing)
 6. Phase 6 — Export upgrades (multi aspect-ratio, off-main-thread video)
+
+> **Branch stacking:** Phase 2 branches off Phase 1 (not `main`), since Phase 1
+> isn't merged yet and Phase 2 builds on its shared prompt/schema. Merge in order:
+> Phase 1 → `main`, then Phase 2 → `main`.
+
+---
+
+## Phase 2 — Backend proxy (server-side keys, quota, URL repurposing)
+
+**Branch:** `feature/backend-proxy` (stacked on `feature/slide-schema-migration`)
+**Goal:** stop shipping AI provider keys to the browser, cap hosted-generation
+cost, and replace the flaky public CORS proxy with a real server-side URL
+extractor — without breaking the existing BYOK (bring-your-own-key) flow.
+
+### Why
+Keys lived in `localStorage` and were used with `dangerouslyAllowBrowser: true`,
+so anyone on the live, ad-funded site could pull a key from devtools. The
+"repurpose a link" idea also needed a server fetch (browsers can't fetch
+arbitrary cross-origin pages; the old `corsProxy.js` routed users through
+`api.allorigins.win`).
+
+### How requests route now
+- **User has their own key** (Settings) → browser calls the provider directly
+  (unchanged BYOK behavior, now deduplicated through shared modules).
+- **No user key** → request goes to `/api/generate`, which uses a server-side key
+  and enforces a daily quota. Keys never reach the browser.
+- **Bulk generation stays BYOK-only** (it can fan out into many calls); it still
+  prompts for a key in Settings. Hosted bulk is a deliberate later follow-up.
+
+### New shared modules (isomorphic — used by client AND serverless)
+- `src/utils/contentPrompt.js` — single source of truth for the generation
+  prompt + `clampSlideCount`. Client and server can no longer drift.
+- `src/utils/aiClient.js` — `callAIProvider` / `parseContentJson` / `generateParsed`
+  for all three providers; `allowBrowser` gates the Anthropic browser flag.
+- `src/utils/sessionId.js` — stable, non-secret per-browser id for quota keying.
+
+### New serverless functions (Vercel `/api`)
+- `api/generate.js` — hosted generation. Resolves the provider key from env
+  (`CLAUDE_API_KEY`/`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`,
+  `DEFAULT_AI_PROVIDER`), enforces quota, returns parsed `{ content }`.
+- `api/repurpose.js` — fetches a blog/article/YouTube URL server-side and returns
+  extracted text.
+- `api/_lib/quota.js` — best-effort daily limiter (`DAILY_GENERATION_LIMIT`,
+  default 40) keyed by session+IP. **In-memory → per-instance; swap for Vercel
+  KV/Upstash for durable limits** (call sites unchanged).
+- `api/_lib/extract.js` — dependency-free HTML→text extraction (title, og tags,
+  paragraphs) + YouTube oEmbed. No new npm packages.
+
+### Modified files
+- `src/hooks/useAIGenerate.js` — rewritten to use the shared modules; BYOK calls
+  the provider directly, otherwise POSTs to `/api/generate` (surfaces quota /
+  no-key errors from the server).
+- `src/hooks/useRepurpose.js` (new) — client hook for `/api/repurpose`.
+- `src/components/TopicForm.jsx` — compact "Repurpose a link" input above the
+  topic box; on extract it fills the topic so it flows through normal generation.
+- `src/components/SettingsPanel.jsx` — keys marked **optional**; banner explains
+  the free hosted generator vs BYOK (unlimited + bulk).
+- `eslint.config.js` — added a Node-globals override for `api/**`.
+- `.gitignore` — ignore `.env*` (keep `.env.example`) and `.vercel`.
+- `contentPrompt.js` import of `slideSchema` uses an explicit `.js` extension so
+  the isomorphic module resolves in raw Node too.
+
+### New config / docs
+- `vercel.json` — `maxDuration` 60s (`generate`) / 30s (`repurpose`); AI calls
+  exceed the 10s default.
+- `.env.example` — documents every server env var. No real keys committed.
+
+### Deployment notes (for when this reaches Vercel)
+- Set the env vars above in the Vercel project. With **none** set, the hosted
+  endpoint returns a clear "add your own key" message and BYOK still works.
+- **Local dev:** `npm run dev` (Vite) does NOT run `/api/*`. To exercise the
+  hosted path locally use `vercel dev`. Plain `npm run dev` still fully works for
+  BYOK users.
+
+### Verification
+- `npm run build` ✅ · `npm run lint` — 11 errors, all pre-existing (no new
+  errors from Phase 2; added a Node override so `api/` doesn't trip `no-undef`).
+- `node --check` on all four `api/` files ✅.
+- Phase 2 unit test (`25 passed, 0 failed`): prompt building + slide-count clamp,
+  JSON fence-stripping, quota allow-then-block at the limit + per-key isolation,
+  and URL extraction (article via mocked HTML, YouTube via mocked oEmbed, invalid
+  URL + non-HTML rejection).
+
+### Manual QA still recommended before merge
+- On a Vercel preview with env keys set: generate with **no** key in Settings
+  (hosted path) and **with** a key (BYOK) — both should work.
+- Exceed `DAILY_GENERATION_LIMIT` and confirm the friendly 429 message.
+- Repurpose a real blog URL and a YouTube URL; confirm the topic box fills.
 
 ---
 

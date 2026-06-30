@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Env files (real keys) — keep .env.example committed, ignore everything else
+.env
+.env.*
+!.env.example
+
+# Vercel CLI local state
+.vercel
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { AlignLeft, Camera, Film, Layers } from 'lucide-react';
+import { AlignLeft, Camera, Film, Layers, Link2, Loader2 } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
+import { useRepurpose } from '../hooks/useRepurpose';
 import { MIN_SLIDE_COUNT, MAX_SLIDE_COUNT, DEFAULT_SLIDE_COUNT } from '../utils/slideSchema';
 
 const SLIDE_COUNT_OPTIONS = Array.from(
@@ -29,9 +30,21 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
     }
   }, [settings.defaultTone]);
 
+  const { extract, isExtracting, error: repurposeError, setError: setRepurposeError } = useRepurpose();
+  const [repurposeUrl, setRepurposeUrl] = useState('');
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleRepurpose = async () => {
+    setRepurposeError(null);
+    const result = await extract(repurposeUrl);
+    if (result?.text) {
+      // Seed the topic with the extracted text so it flows through normal generation.
+      setFormData(prev => ({ ...prev, topic: result.text }));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -69,6 +82,34 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
             Videos
           </button>
         </div>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
+          <Link2 className="w-3 h-3" />
+          Repurpose a link <span className="text-gray-400 font-normal">(blog, article, or YouTube — optional)</span>
+        </label>
+        <div className="flex gap-2">
+          <input
+            type="url"
+            value={repurposeUrl}
+            onChange={(e) => setRepurposeUrl(e.target.value)}
+            placeholder="https://example.com/post"
+            className="flex-1 min-w-0 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta"
+          />
+          <button
+            type="button"
+            onClick={handleRepurpose}
+            disabled={isExtracting || !repurposeUrl.trim()}
+            className="flex items-center gap-1.5 px-4 rounded-lg text-sm font-semibold bg-gray-100 text-dark hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          >
+            {isExtracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
+            {isExtracting ? 'Reading...' : 'Extract'}
+          </button>
+        </div>
+        {repurposeError && (
+          <p className="text-xs text-red-500 mt-1.5">{repurposeError}</p>
+        )}
       </div>
 
       <div className="mb-4">
