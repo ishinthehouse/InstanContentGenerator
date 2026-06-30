@@ -53,17 +53,17 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6">
+    <form onSubmit={handleSubmit} className="glass-panel p-6">
       <div className="mb-4">
-        <label className="block text-xs font-medium text-gray-500 mb-2">Media Source</label>
-        <div className="inline-flex items-center gap-1 bg-gray-100 rounded-full p-1">
+        <label className="field-label mb-2">Media Source</label>
+        <div className="inline-flex items-center gap-1 bg-white/[0.04] border border-white/10 rounded-full p-1">
           <button
             type="button"
             onClick={() => onMediaModeChange && onMediaModeChange('photos')}
             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
               mediaMode === 'photos'
-                ? 'bg-insta text-white shadow-sm'
-                : 'text-gray-500 hover:text-dark'
+                ? 'bg-brand-gradient text-white shadow-glow'
+                : 'text-white/50 hover:text-white'
             }`}
           >
             <Camera className="w-3.5 h-3.5" />
@@ -74,8 +74,8 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
             onClick={() => onMediaModeChange && onMediaModeChange('videos')}
             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
               mediaMode === 'videos'
-                ? 'bg-insta text-white shadow-sm'
-                : 'text-gray-500 hover:text-dark'
+                ? 'bg-brand-gradient text-white shadow-glow'
+                : 'text-white/50 hover:text-white'
             }`}
           >
             <Film className="w-3.5 h-3.5" />
@@ -85,9 +85,9 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
       </div>
 
       <div className="mb-4">
-        <label className="block text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
+        <label className="field-label flex items-center gap-1">
           <Link2 className="w-3 h-3" />
-          Repurpose a link <span className="text-gray-400 font-normal">(blog, article, or YouTube — optional)</span>
+          Repurpose a link <span className="text-white/35 font-normal">(blog, article, or YouTube — optional)</span>
         </label>
         <div className="flex gap-2">
           <input
@@ -95,25 +95,25 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
             value={repurposeUrl}
             onChange={(e) => setRepurposeUrl(e.target.value)}
             placeholder="https://example.com/post"
-            className="flex-1 min-w-0 border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta"
+            className="glass-input flex-1 min-w-0 p-2.5"
           />
           <button
             type="button"
             onClick={handleRepurpose}
             disabled={isExtracting || !repurposeUrl.trim()}
-            className="flex items-center gap-1.5 px-4 rounded-lg text-sm font-semibold bg-gray-100 text-dark hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            className="flex items-center gap-1.5 px-4 rounded-lg text-sm font-semibold bg-white/[0.06] border border-white/10 text-white hover:bg-white/[0.12] transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
           >
             {isExtracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
             {isExtracting ? 'Reading...' : 'Extract'}
           </button>
         </div>
         {repurposeError && (
-          <p className="text-xs text-red-500 mt-1.5">{repurposeError}</p>
+          <p className="text-xs text-red-300 mt-1.5">{repurposeError}</p>
         )}
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-semibold text-dark mb-2">What is this post about?</label>
+        <label className="block text-sm font-semibold text-white mb-2 font-display">What is this post about?</label>
         <textarea
           name="topic"
           value={formData.topic}
@@ -121,14 +121,14 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
           placeholder="e.g. Morning hydration routine with functional health drinks..."
           rows={3}
           required
-          className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta resize-none"
+          className="glass-input resize-none"
         />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Tone</label>
-          <select name="tone" value={formData.tone} onChange={handleChange} className="w-full text-sm border border-gray-200 rounded-md p-2 focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta">
+          <label className="field-label">Tone</label>
+          <select name="tone" value={formData.tone} onChange={handleChange} className="glass-select">
             <option value="Inspirational">Inspirational</option>
             <option value="Playful">Playful</option>
             <option value="Educational">Educational</option>
@@ -139,8 +139,8 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Content Type</label>
-          <select name="contentType" value={formData.contentType} onChange={handleChange} className="w-full text-sm border border-gray-200 rounded-md p-2 focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta">
+          <label className="field-label">Content Type</label>
+          <select name="contentType" value={formData.contentType} onChange={handleChange} className="glass-select">
             <option value="Product post">Product post</option>
             <option value="Educational">Educational</option>
             <option value="Behind the scenes">Behind the scenes</option>
@@ -150,8 +150,8 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">CTA Type</label>
-          <select name="ctaType" value={formData.ctaType} onChange={handleChange} className="w-full text-sm border border-gray-200 rounded-md p-2 focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta">
+          <label className="field-label">CTA Type</label>
+          <select name="ctaType" value={formData.ctaType} onChange={handleChange} className="glass-select">
             <option value="Save this post">Save this post</option>
             <option value="Tag a friend">Tag a friend</option>
             <option value="Comment below">Comment below</option>
@@ -161,16 +161,16 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Language</label>
-          <select name="language" value={formData.language} onChange={handleChange} className="w-full text-sm border border-gray-200 rounded-md p-2 focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta">
+          <label className="field-label">Language</label>
+          <select name="language" value={formData.language} onChange={handleChange} className="glass-select">
             <option value="English">English</option>
             <option value="Hinglish">Hinglish</option>
           </select>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Hashtags</label>
-          <select name="hashtagCount" value={formData.hashtagCount} onChange={handleChange} className="w-full text-sm border border-gray-200 rounded-md p-2 focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta">
+          <label className="field-label">Hashtags</label>
+          <select name="hashtagCount" value={formData.hashtagCount} onChange={handleChange} className="glass-select">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
@@ -179,11 +179,11 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
+          <label className="field-label flex items-center gap-1">
             <AlignLeft className="w-3 h-3" />
             Slide Text
           </label>
-          <select name="slideTextLength" value={formData.slideTextLength} onChange={handleChange} className="w-full text-sm border border-gray-200 rounded-md p-2 focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta">
+          <select name="slideTextLength" value={formData.slideTextLength} onChange={handleChange} className="glass-select">
             <option value="short">Short — punchy lines</option>
             <option value="medium">Medium — 1-2 sentences</option>
             <option value="detailed">Detailed — 2-3 sentences</option>
@@ -191,11 +191,11 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1 flex items-center gap-1">
+          <label className="field-label flex items-center gap-1">
             <Layers className="w-3 h-3" />
             Slides
           </label>
-          <select name="slideCount" value={formData.slideCount} onChange={handleChange} className="w-full text-sm border border-gray-200 rounded-md p-2 focus:outline-none focus:border-insta focus:ring-1 focus:ring-insta">
+          <select name="slideCount" value={formData.slideCount} onChange={handleChange} className="glass-select">
             {SLIDE_COUNT_OPTIONS.map((n) => (
               <option key={n} value={String(n)}>
                 {n} slides{n === DEFAULT_SLIDE_COUNT ? ' (default)' : ''}
@@ -208,14 +208,12 @@ export default function TopicForm({ onSubmit, isGenerating, mediaMode = 'photos'
       <button
         type="submit"
         disabled={isGenerating}
-        className="w-full bg-dark text-white font-medium py-3 px-4 rounded-lg hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
+        className="btn-primary py-3"
       >
         {isGenerating ? (
-          <>
-            <span className="animate-pulse mr-2">Writing your caption and script...</span>
-          </>
+          <span className="animate-pulse">Writing your caption and script...</span>
         ) : (
-          "Generate Content"
+          'Generate Content'
         )}
       </button>
     </form>

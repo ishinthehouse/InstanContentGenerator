@@ -11,12 +11,12 @@ export default function PhotoFilterSelector({ photos, onApplyFilter }) {
   // We need a cloud name to do transformations
   if (!settings.cloudinaryName) {
     return (
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mt-6 mb-6">
+      <div className="glass-panel p-6">
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-5 h-5 text-gray-400" />
-          <h3 className="text-sm font-semibold text-dark">Photo Filters</h3>
+          <Sparkles className="w-5 h-5 text-white/40" />
+          <h3 className="section-title">Photo Filters</h3>
         </div>
-        <p className="text-xs text-gray-500 mb-4">
+        <p className="text-xs text-white/50">
           Add your Cloudinary Cloud Name in Settings to enable beautiful Instagram-style photo filters.
         </p>
       </div>
@@ -64,11 +64,11 @@ export default function PhotoFilterSelector({ photos, onApplyFilter }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mt-6 mb-6">
+    <div className="glass-panel p-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-insta" />
-          <h3 className="text-sm font-semibold text-dark">Enhance & Filter</h3>
+          <h3 className="section-title">Enhance & Filter</h3>
         </div>
 
         {/* Category Pills */}
@@ -79,8 +79,8 @@ export default function PhotoFilterSelector({ photos, onApplyFilter }) {
               onClick={() => setActiveCategory(cat.id)}
               className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
                 activeCategory === cat.id
-                  ? 'bg-dark text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-brand-gradient text-white'
+                  : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
               }`}
             >
               {cat.name}
@@ -130,11 +130,11 @@ export default function PhotoFilterSelector({ photos, onApplyFilter }) {
               </div>
               <div className="text-center">
                 <p className={`text-xs font-medium transition-colors ${
-                  isSelected ? 'text-insta' : 'text-gray-600 group-hover:text-dark'
+                  isSelected ? 'text-insta' : 'text-white/60 group-hover:text-white'
                 }`}>
                   {filter.name}
                 </p>
-                <p className="text-[9px] text-gray-400 capitalize">{filter.category}</p>
+                <p className="text-[9px] text-white/40 capitalize">{filter.category}</p>
               </div>
             </div>
           );

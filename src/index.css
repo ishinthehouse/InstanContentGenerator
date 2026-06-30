@@ -5,8 +5,67 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    color-scheme: dark; /* native controls (scrollbars, selects, date pickers) render dark */
+  }
   body {
-    @apply font-sans bg-[#f9fafb] text-[#0f0f0f] antialiased;
+    @apply font-ui text-white/90 antialiased;
+    background-color: #0a0a0c;
+    /* layered radial accents over deep midnight */
+    background-image:
+      radial-gradient(70% 55% at 80% -5%, rgba(225, 48, 108, 0.14) 0%, rgba(10, 10, 12, 0) 60%),
+      radial-gradient(60% 50% at 0% 0%, rgba(109, 94, 252, 0.16) 0%, rgba(10, 10, 12, 0) 55%);
+    background-attachment: fixed;
+  }
+  /* Native select option lists — force readable dark text on light OS menus */
+  option {
+    color: #0f0f0f;
+  }
+}
+
+@layer components {
+  /* Frosted glass card — the core surface of the redesigned workspace */
+  .glass-panel {
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-2xl shadow-panel;
+  }
+  .glass-panel-strong {
+    @apply bg-white/[0.07] backdrop-blur-xl border border-white/15 rounded-2xl shadow-panel;
+  }
+
+  /* Section + field typography */
+  .section-title {
+    @apply text-sm font-semibold text-white font-display tracking-tight;
+  }
+  .field-label {
+    @apply block text-xs font-medium text-white/50 mb-1;
+  }
+
+  /* Dark form controls */
+  .glass-input {
+    @apply w-full bg-white/[0.04] border border-white/10 rounded-lg p-3 text-sm text-white placeholder-white/30
+           focus:outline-none focus:border-vivid/70 focus:ring-1 focus:ring-vivid/40 transition-colors;
+  }
+  .glass-select {
+    @apply w-full bg-white/[0.04] border border-white/10 rounded-md p-2 text-sm text-white
+           focus:outline-none focus:border-vivid/70 focus:ring-1 focus:ring-vivid/40 transition-colors;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold text-white
+           bg-brand-gradient hover:shadow-glow transition-all active:scale-[0.98]
+           disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+  .btn-ghost {
+    @apply w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium
+           text-white/80 bg-white/[0.04] border border-white/10 hover:bg-white/[0.08] hover:text-white
+           transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Chips / pills */
+  .chip {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium
+           bg-white/[0.06] text-white/60 border border-white/10;
   }
 }
 

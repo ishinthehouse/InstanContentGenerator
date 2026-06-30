@@ -164,16 +164,16 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6">
+    <div className="glass-panel p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <FileSpreadsheet className="w-5 h-5 text-insta" />
-          <h3 className="text-sm font-semibold text-dark">Bulk Upload</h3>
+          <h3 className="section-title">Bulk Upload</h3>
         </div>
         {(parsedData || results.length > 0) && !isProcessing && (
           <button
             onClick={handleClear}
-            className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-xs text-white/40 hover:text-white/70 transition-colors"
           >
             Clear
           </button>
@@ -190,15 +190,15 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
             onDragLeave={handleDragLeave}
             className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
               isDragging
-                ? 'border-insta bg-pink-50'
-                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                ? 'border-insta bg-insta/15'
+                : 'border-white/10 hover:border-white/20 hover:bg-white/[0.04]'
             }`}
           >
-            <Upload className={`w-8 h-8 mx-auto mb-3 ${isDragging ? 'text-insta' : 'text-gray-300'}`} />
-            <p className="text-sm text-gray-600 font-medium">
+            <Upload className={`w-8 h-8 mx-auto mb-3 ${isDragging ? 'text-insta' : 'text-white/30'}`} />
+            <p className="text-sm text-white/70 font-medium">
               Drop your Excel file here or <span className="text-insta">browse</span>
             </p>
-            <p className="text-xs text-gray-400 mt-1">.xlsx, .xls, or .csv</p>
+            <p className="text-xs text-white/40 mt-1">.xlsx, .xls, or .csv</p>
           </div>
           <input
             ref={fileInputRef}
@@ -209,11 +209,11 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
           />
 
           {/* Expected format hint */}
-          <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
-            <p className="text-[11px] font-semibold text-gray-500 mb-2">Expected columns:</p>
+          <div className="mt-4 p-3 bg-white/[0.04] rounded-lg border border-white/10">
+            <p className="text-[11px] font-semibold text-white/50 mb-2">Expected columns:</p>
             <div className="flex flex-wrap gap-1.5">
               {['caption', 'post content', 'keyword', 'cta'].map(col => (
-                <span key={col} className="px-2 py-0.5 bg-white border border-gray-200 rounded text-[10px] font-mono text-gray-600">
+                <span key={col} className="px-2 py-0.5 bg-white/[0.04] border border-white/10 rounded text-[10px] font-mono text-white/70">
                   {col}
                 </span>
               ))}
@@ -224,7 +224,7 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
 
       {/* Parse Error */}
       {parseError && (
-        <div className="mt-3 p-3 bg-red-50 text-red-600 text-xs rounded-lg border border-red-100 flex items-start gap-2">
+        <div className="mt-3 p-3 bg-red-500/10 text-red-300 text-xs rounded-lg border border-red-500/20 flex items-start gap-2">
           <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
           <span>{parseError}</span>
         </div>
@@ -234,78 +234,78 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
       {parsedData && !isProcessing && results.length === 0 && (
         <div className="space-y-4">
           {/* File info */}
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-3 p-3 bg-white/[0.04] rounded-lg">
             <FileSpreadsheet className="w-5 h-5 text-green-600" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-dark truncate">{fileName}</p>
-              <p className="text-xs text-gray-500">{parsedData.rows.length} valid rows found</p>
+              <p className="text-sm font-medium text-white truncate">{fileName}</p>
+              <p className="text-xs text-white/50">{parsedData.rows.length} valid rows found</p>
             </div>
-            <button onClick={handleClear} className="text-gray-400 hover:text-gray-600">
+            <button onClick={handleClear} className="text-white/40 hover:text-white/70">
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Column mapping preview */}
           <div className="text-xs space-y-1">
-            <p className="font-medium text-gray-500">Column mapping:</p>
+            <p className="font-medium text-white/50">Column mapping:</p>
             {Object.entries(parsedData.columnMapping).map(([raw, mapped]) => (
-              <div key={raw} className="flex items-center gap-2 text-gray-600">
-                <span className="font-mono bg-gray-100 px-1.5 py-0.5 rounded">{raw}</span>
-                <span className="text-gray-300">→</span>
-                <span className="font-semibold text-dark">{mapped}</span>
+              <div key={raw} className="flex items-center gap-2 text-white/70">
+                <span className="font-mono bg-white/[0.06] px-1.5 py-0.5 rounded">{raw}</span>
+                <span className="text-white/30">→</span>
+                <span className="font-semibold text-white">{mapped}</span>
               </div>
             ))}
             {parsedData.unmappedHeaders.length > 0 && (
-              <p className="text-gray-400 mt-1">
+              <p className="text-white/40 mt-1">
                 Ignored: {parsedData.unmappedHeaders.join(', ')}
               </p>
             )}
           </div>
 
           {/* Row preview table */}
-          <div className="overflow-x-auto border border-gray-200 rounded-lg">
+          <div className="overflow-x-auto border border-white/10 rounded-lg">
             <table className="w-full text-xs">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="text-left py-2 px-3 font-semibold text-gray-500">#</th>
+                <tr className="bg-white/[0.04] border-b border-white/10">
+                  <th className="text-left py-2 px-3 font-semibold text-white/50">#</th>
                   {['caption', 'postContent', 'keyword', 'cta'].filter(k => parsedData.rows.some(r => r[k])).map(k => (
-                    <th key={k} className="text-left py-2 px-3 font-semibold text-gray-500 max-w-[120px]">{k}</th>
+                    <th key={k} className="text-left py-2 px-3 font-semibold text-white/50 max-w-[120px]">{k}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {parsedData.rows.slice(0, 5).map((row, i) => (
-                  <tr key={i} className="border-b border-gray-100 last:border-0">
-                    <td className="py-2 px-3 text-gray-400">{i + 1}</td>
+                  <tr key={i} className="border-b border-white/10 last:border-0">
+                    <td className="py-2 px-3 text-white/40">{i + 1}</td>
                     {['caption', 'postContent', 'keyword', 'cta'].filter(k => parsedData.rows.some(r => r[k])).map(k => (
-                      <td key={k} className="py-2 px-3 max-w-[120px] truncate text-gray-700">{row[k] || '—'}</td>
+                      <td key={k} className="py-2 px-3 max-w-[120px] truncate text-white/80">{row[k] || '—'}</td>
                     ))}
                   </tr>
                 ))}
               </tbody>
             </table>
             {parsedData.rows.length > 5 && (
-              <div className="text-center py-2 text-[10px] text-gray-400 bg-gray-50">
+              <div className="text-center py-2 text-[10px] text-white/40 bg-white/[0.04]">
                 ...and {parsedData.rows.length - 5} more rows
               </div>
             )}
           </div>
 
           {/* AI toggle checkbox */}
-          <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
+          <div className="p-3 bg-gradient-to-r from-vivid/10 to-royal/10 rounded-lg border border-white/10">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={useAI}
                 onChange={(e) => setUseAI(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-insta focus:ring-insta"
+                className="mt-0.5 w-4 h-4 rounded border-white/20 text-insta focus:ring-insta"
               />
               <div>
                 <div className="flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-purple-500" />
-                  <span className="text-sm font-semibold text-dark">Use AI to generate content</span>
+                  <span className="text-sm font-semibold text-white">Use AI to generate content</span>
                 </div>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-white/50 mt-0.5">
                   {useAI
                     ? 'AI will generate full captions, reels scripts, and hashtags based on your Excel data.'
                     : 'Posts will use your Excel data as-is — captions, keywords, and CTAs directly from the file.'}
@@ -315,8 +315,8 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
           </div>
 
           {/* Media Mode Toggle — Photos vs Videos */}
-          <div className="p-3 bg-white border border-gray-200 rounded-lg">
-            <p className="text-xs font-semibold text-dark mb-2 flex items-center gap-1.5">
+          <div className="p-3 bg-white/[0.04] border border-white/10 rounded-lg">
+            <p className="text-xs font-semibold text-white mb-2 flex items-center gap-1.5">
               {mediaMode === 'videos' ? <Film className="w-3.5 h-3.5 text-purple-500" /> : <Image className="w-3.5 h-3.5 text-purple-500" />}
               Media type to fetch from Pexels
             </p>
@@ -326,36 +326,36 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
                 onClick={() => setMediaMode('photos')}
                 className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 text-center transition-all ${
                   mediaMode === 'photos'
-                    ? 'border-insta bg-pink-50 shadow-sm'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                    ? 'border-insta bg-insta/15 shadow-sm'
+                    : 'border-white/10 bg-white/[0.04] hover:border-white/20 hover:bg-white/[0.04]'
                 }`}
               >
-                <Image className={`w-5 h-5 ${mediaMode === 'photos' ? 'text-insta' : 'text-gray-400'}`} />
-                <span className={`text-xs font-bold ${mediaMode === 'photos' ? 'text-insta' : 'text-dark'}`}>Photos</span>
-                <span className="text-[10px] text-gray-500">Carousel slides (PNG)</span>
+                <Image className={`w-5 h-5 ${mediaMode === 'photos' ? 'text-insta' : 'text-white/40'}`} />
+                <span className={`text-xs font-bold ${mediaMode === 'photos' ? 'text-insta' : 'text-white'}`}>Photos</span>
+                <span className="text-[10px] text-white/50">Carousel slides (PNG)</span>
               </button>
               <button
                 type="button"
                 onClick={() => setMediaMode('videos')}
                 className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 text-center transition-all ${
                   mediaMode === 'videos'
-                    ? 'border-insta bg-pink-50 shadow-sm'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                    ? 'border-insta bg-insta/15 shadow-sm'
+                    : 'border-white/10 bg-white/[0.04] hover:border-white/20 hover:bg-white/[0.04]'
                 }`}
               >
-                <Film className={`w-5 h-5 ${mediaMode === 'videos' ? 'text-insta' : 'text-gray-400'}`} />
-                <span className={`text-xs font-bold ${mediaMode === 'videos' ? 'text-insta' : 'text-dark'}`}>Videos</span>
-                <span className="text-[10px] text-gray-500">Rendered reels</span>
+                <Film className={`w-5 h-5 ${mediaMode === 'videos' ? 'text-insta' : 'text-white/40'}`} />
+                <span className={`text-xs font-bold ${mediaMode === 'videos' ? 'text-insta' : 'text-white'}`}>Videos</span>
+                <span className="text-[10px] text-white/50">Rendered reels</span>
               </button>
             </div>
           </div>
 
           {/* Slide Text Length — only relevant when using AI */}
           {useAI && (
-            <div className="p-4 bg-white border border-gray-200 rounded-lg space-y-3">
+            <div className="p-4 bg-white/[0.04] border border-white/10 rounded-lg space-y-3">
               <div className="flex items-center gap-1.5">
-                <AlignLeft className="w-3.5 h-3.5 text-gray-400" />
-                <p className="text-xs font-semibold text-dark">How long should each carousel slide be?</p>
+                <AlignLeft className="w-3.5 h-3.5 text-white/40" />
+                <p className="text-xs font-semibold text-white">How long should each carousel slide be?</p>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {[
@@ -369,18 +369,18 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
                     onClick={() => setSlideTextLength(opt.value)}
                     className={`flex flex-col items-center gap-1 p-3 rounded-lg border-2 text-center transition-all ${
                       slideTextLength === opt.value
-                        ? 'border-insta bg-pink-50 shadow-sm'
-                        : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                        ? 'border-insta bg-insta/15 shadow-sm'
+                        : 'border-white/10 bg-white/[0.04] hover:border-white/20 hover:bg-white/[0.04]'
                     }`}
                   >
                     <span className={`text-xs font-bold ${
-                      slideTextLength === opt.value ? 'text-insta' : 'text-dark'
+                      slideTextLength === opt.value ? 'text-insta' : 'text-white'
                     }`}>{opt.label}</span>
-                    <span className="text-[10px] text-gray-500 leading-tight">{opt.desc}</span>
+                    <span className="text-[10px] text-white/50 leading-tight">{opt.desc}</span>
                     <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full mt-0.5 ${
                       slideTextLength === opt.value
                         ? 'bg-insta/10 text-insta'
-                        : 'bg-gray-100 text-gray-400'
+                        : 'bg-white/[0.06] text-white/40'
                     }`}>{opt.lines}</span>
                   </button>
                 ))}
@@ -390,7 +390,7 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
 
           {/* Bulk Error */}
           {bulkError && (
-            <div className="p-3 bg-red-50 text-red-600 text-xs rounded-lg border border-red-100 flex items-start gap-2">
+            <div className="p-3 bg-red-500/10 text-red-300 text-xs rounded-lg border border-red-500/20 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{bulkError}</span>
             </div>
@@ -413,12 +413,12 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
       {isProcessing && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-dark">
+            <p className="text-sm font-medium text-white">
               Processing {progress.current} of {progress.total}...
             </p>
             <button
               onClick={onCancel}
-              className="flex items-center gap-1 text-xs text-red-500 hover:text-red-600 transition-colors"
+              className="flex items-center gap-1 text-xs text-red-300 hover:text-red-300 transition-colors"
             >
               <Square className="w-3 h-3" />
               Stop
@@ -426,7 +426,7 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
           </div>
 
           {/* Progress bar */}
-          <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-white/[0.06] rounded-full h-2 overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-purple-600 via-insta to-orange-400 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progress.total > 0 ? (progress.current / progress.total) * 100 : 0}%` }}
@@ -448,13 +448,13 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
       {!isProcessing && results.length > 0 && (
         <div className="space-y-4">
           {/* Summary */}
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-3 p-3 bg-white/[0.04] rounded-lg">
             <CheckCircle className="w-5 h-5 text-green-500" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-dark">
+              <p className="text-sm font-medium text-white">
                 Bulk generation complete
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-white/50">
                 {successCount} succeeded{errorCount > 0 ? `, ${errorCount} failed` : ''}
               </p>
             </div>
@@ -479,23 +479,23 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
             <div className="space-y-2">
               {zipExport.active ? (
                 /* Progress state */
-                <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-xl space-y-2">
+                <div className="p-4 bg-gradient-to-r from-vivid/10 to-royal/10 border border-white/10 rounded-xl space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3.5 h-3.5 border-2 border-insta border-t-transparent rounded-full animate-spin" />
-                      <span className="text-xs font-semibold text-dark">Building ZIP…</span>
+                      <span className="text-xs font-semibold text-white">Building ZIP…</span>
                     </div>
-                    <span className="text-xs text-gray-500 font-mono">
+                    <span className="text-xs text-white/50 font-mono">
                       {zipExport.done} / {zipExport.total} slides
                     </span>
                   </div>
-                  <div className="w-full bg-white/80 rounded-full h-2 overflow-hidden border border-purple-100">
+                  <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden border border-white/10">
                     <div
                       className="h-full bg-gradient-to-r from-purple-600 via-insta to-orange-400 rounded-full transition-all duration-300 ease-out"
                       style={{ width: `${zipExport.total > 0 ? (zipExport.done / zipExport.total) * 100 : 0}%` }}
                     />
                   </div>
-                  <p className="text-[10px] text-gray-400">
+                  <p className="text-[10px] text-white/40">
                     Rendering each slide off-screen — this may take a moment for large batches.
                   </p>
                 </div>
@@ -515,18 +515,18 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
           {hasExportableResults && hasVideoResults && (
             <div className="space-y-2">
               {videoZipExport.active ? (
-                <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 rounded-xl space-y-2">
+                <div className="p-4 bg-gradient-to-r from-royal/10 to-vivid/10 border border-white/10 rounded-xl space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3.5 h-3.5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-                      <span className="text-xs font-semibold text-dark">Rendering videos…</span>
+                      <span className="text-xs font-semibold text-white">Rendering videos…</span>
                     </div>
-                    <span className="text-xs text-gray-500 font-mono">
+                    <span className="text-xs text-white/50 font-mono">
                       {videoZipExport.done} / {videoZipExport.total} clips
                     </span>
                   </div>
                   {/* Overall progress */}
-                  <div className="w-full bg-white/80 rounded-full h-2 overflow-hidden border border-purple-100">
+                  <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden border border-white/10">
                     <div
                       className="h-full bg-gradient-to-r from-purple-600 via-insta to-orange-400 rounded-full transition-all duration-300 ease-out"
                       style={{ width: `${videoZipExport.total > 0 ? (videoZipExport.done / videoZipExport.total) * 100 : 0}%` }}
@@ -535,19 +535,19 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
                   {/* Current clip render progress */}
                   {videoZipExport.done < videoZipExport.total && (
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-gray-400 whitespace-nowrap">Current clip:</span>
-                      <div className="flex-1 bg-white/80 rounded-full h-1.5 overflow-hidden border border-gray-100">
+                      <span className="text-[10px] text-white/40 whitespace-nowrap">Current clip:</span>
+                      <div className="flex-1 bg-white/10 rounded-full h-1.5 overflow-hidden border border-white/10">
                         <div
                           className="h-full bg-purple-400 rounded-full transition-all duration-200 ease-out"
                           style={{ width: `${Math.round((videoZipExport.clipProgress || 0) * 100)}%` }}
                         />
                       </div>
-                      <span className="text-[10px] text-gray-400 font-mono">
+                      <span className="text-[10px] text-white/40 font-mono">
                         {Math.round((videoZipExport.clipProgress || 0) * 100)}%
                       </span>
                     </div>
                   )}
-                  <p className="text-[10px] text-gray-400">
+                  <p className="text-[10px] text-white/40">
                     Each video is rendered with caption overlays — this is CPU-intensive and may take a few minutes.
                   </p>
                 </div>
@@ -572,34 +572,34 @@ export default function BulkUpload({ onProcessBulk, isProcessing, progress, resu
 function ResultRow({ result, index, isExpanded, onToggle, onSelect }) {
   return (
     <div className={`border rounded-lg overflow-hidden transition-colors ${
-      result.error ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white hover:border-gray-300'
+      result.error ? 'border-red-500/20 bg-red-500/10' : 'border-white/10 bg-white/[0.04] hover:border-white/20'
     }`}>
       <div
         onClick={onToggle}
         className="flex items-center gap-3 p-3 cursor-pointer"
       >
-        <span className="text-xs text-gray-400 font-mono w-6 text-center">{index + 1}</span>
+        <span className="text-xs text-white/40 font-mono w-6 text-center">{index + 1}</span>
         {result.error ? (
-          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+          <AlertCircle className="w-4 h-4 text-red-300 flex-shrink-0" />
         ) : (
           <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
         )}
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-dark truncate font-medium">
+          <p className="text-xs text-white truncate font-medium">
             {result.content?.caption || result.row?.caption || result.error || 'No content'}
           </p>
         </div>
         {onToggle && (
-          isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />
+          isExpanded ? <ChevronUp className="w-4 h-4 text-white/40" /> : <ChevronDown className="w-4 h-4 text-white/40" />
         )}
       </div>
 
       {isExpanded && result.content && (
-        <div className="border-t border-gray-100 p-3 space-y-3">
+        <div className="border-t border-white/10 p-3 space-y-3">
           {/* Caption preview */}
           <div>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1">Caption</p>
-            <p className="text-xs text-gray-700 leading-relaxed line-clamp-3">{result.content.caption}</p>
+            <p className="text-[10px] font-bold text-white/40 uppercase tracking-wide mb-1">Caption</p>
+            <p className="text-xs text-white/80 leading-relaxed line-clamp-3">{result.content.caption}</p>
           </div>
 
           {/* Photos thumbnails */}
@@ -618,7 +618,7 @@ function ResultRow({ result, index, isExpanded, onToggle, onSelect }) {
 
           {/* Hashtags */}
           {result.content.hashtags && (
-            <div className="text-[10px] text-gray-400 truncate">
+            <div className="text-[10px] text-white/40 truncate">
               {[...(result.content.hashtags.niche || []), ...(result.content.hashtags.broad || [])].slice(0, 6).join(' ')}
             </div>
           )}
@@ -627,7 +627,7 @@ function ResultRow({ result, index, isExpanded, onToggle, onSelect }) {
           {onSelect && (
             <button
               onClick={(e) => { e.stopPropagation(); onSelect(); }}
-              className="w-full py-2 text-xs font-semibold text-insta bg-pink-50 rounded-md hover:bg-pink-100 transition-colors"
+              className="w-full py-2 text-xs font-semibold text-insta bg-insta/15 rounded-md hover:bg-insta/25 transition-colors"
             >
               View full post →
             </button>
@@ -636,9 +636,9 @@ function ResultRow({ result, index, isExpanded, onToggle, onSelect }) {
       )}
 
       {isExpanded && result.error && (
-        <div className="border-t border-red-100 p-3">
-          <p className="text-xs text-red-500">{result.error}</p>
-          <p className="text-[10px] text-gray-400 mt-1">
+        <div className="border-t border-red-500/20 p-3">
+          <p className="text-xs text-red-300">{result.error}</p>
+          <p className="text-[10px] text-white/40 mt-1">
             Row data: {JSON.stringify(result.row).slice(0, 100)}...
           </p>
         </div>

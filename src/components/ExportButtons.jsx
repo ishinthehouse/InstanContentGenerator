@@ -33,50 +33,32 @@ export default function ExportButtons({ content, topic, onRegenerateCaption, onR
   };
 
   return (
-    <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm mt-6">
-      <h3 className="text-sm font-semibold text-dark mb-4">Export Options</h3>
-      
+    <div className="glass-panel p-5">
+      <h3 className="section-title mb-4">Export Options</h3>
+
       <div className="space-y-3">
-        <button 
-          onClick={handleCopyCaption}
-          className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
-        >
+        <button onClick={handleCopyCaption} className="btn-ghost">
           <Copy className="w-4 h-4" />
           {copiedCaption ? 'Copied!' : 'Copy caption only'}
         </button>
 
-        <button 
-          onClick={handleCopyAll}
-          className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
-        >
+        <button onClick={handleCopyAll} className="btn-ghost">
           <Copy className="w-4 h-4" />
           {copiedAll ? 'Copied!' : 'Copy caption + tags'}
         </button>
 
-        <button 
-          onClick={handleDownload}
-          disabled={isExporting}
-          className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-insta text-white rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors disabled:opacity-70"
-        >
+        <button onClick={handleDownload} disabled={isExporting} className="btn-primary">
           <Download className="w-4 h-4" />
           {isExporting ? 'Exporting...' : 'Download post image'}
         </button>
 
-        <div className="pt-4 border-t border-gray-100 mt-4 space-y-3">
-          <button 
-            onClick={onRegenerateCaption}
-            disabled={isGenerating}
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-dark text-white rounded-lg text-sm font-medium hover:bg-black transition-colors disabled:opacity-50"
-          >
+        <div className="pt-4 border-t border-white/10 mt-4 space-y-3">
+          <button onClick={onRegenerateCaption} disabled={isGenerating} className="btn-ghost">
             <RefreshCw className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
             Regenerate text
           </button>
 
-          <button 
-            onClick={onRegeneratePhotos}
-            disabled={isSearching}
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
-          >
+          <button onClick={onRegeneratePhotos} disabled={isSearching} className="btn-ghost">
             <ImageIcon className="w-4 h-4" />
             Find new photos
           </button>

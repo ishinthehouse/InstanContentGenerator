@@ -471,12 +471,12 @@ export default function CarouselPreview({ content, photos }) {
   const currentSlide = Math.min(activeSlide, slideCount - 1);
 
   return (
-    <div className="mt-6">
+    <div className="glass-panel p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-dark">{headerTitle}</h3>
+          <h3 className="section-title">{headerTitle}</h3>
           {photos.length > 1 && (
-            <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
+            <span className="chip">
               {photos.length} {isVideoMode ? 'videos' : 'photos'}
             </span>
           )}
@@ -485,7 +485,7 @@ export default function CarouselPreview({ content, photos }) {
           {photos.length > 1 && !isVideoMode && (
             <button
               onClick={handleReshuffle}
-              className="flex items-center gap-1 text-xs text-gray-500 hover:text-insta transition-colors"
+              className="flex items-center gap-1 text-xs text-white/50 hover:text-insta transition-colors"
               title="Reshuffle photo assignments"
             >
               <Shuffle className="w-3.5 h-3.5" />
@@ -493,7 +493,7 @@ export default function CarouselPreview({ content, photos }) {
             </button>
           )}
           {slideCount > 1 && (
-            <span className="text-xs text-gray-400 font-medium">
+            <span className="text-xs text-white/40 font-medium">
               {currentSlide + 1} / {slideCount}
             </span>
           )}
@@ -508,8 +508,8 @@ export default function CarouselPreview({ content, photos }) {
               onClick={() => setActiveFont(font.id)}
               className={`px-3 py-1.5 rounded-md text-[11px] font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
                 activeFont === font.id
-                  ? 'bg-insta text-white shadow-sm'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                  ? 'bg-brand-gradient text-white shadow-glow'
+                  : 'bg-white/[0.06] border border-white/10 text-white/60 hover:bg-white/[0.12]'
               }`}
             >
               <span style={{ fontFamily: font.family || undefined }}>{font.name}</span>
@@ -591,7 +591,7 @@ export default function CarouselPreview({ content, photos }) {
               key={i}
               onClick={() => goTo(i)}
               className={`transition-all duration-300 rounded-full ${
-                i === currentSlide ? 'w-6 h-2 bg-insta' : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+                i === currentSlide ? 'w-6 h-2 bg-insta' : 'w-2 h-2 bg-white/20 hover:bg-white/40'
               }`}
               aria-label={`Go to slide ${i + 1}`}
             />
@@ -619,7 +619,7 @@ export default function CarouselPreview({ content, photos }) {
           <button
             onClick={handleDownloadAll}
             disabled={isExporting || !!videoExport}
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-50 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-white/[0.06] border border-white/10 text-white/70 rounded-xl text-xs font-semibold hover:bg-white/[0.12] hover:text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <Download className="w-3.5 h-3.5" />
             {isExporting ? 'Exporting frames...' : 'Download caption frames (PNG)'}

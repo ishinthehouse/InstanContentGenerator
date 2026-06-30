@@ -15,7 +15,7 @@ export default function PostPreview({ content, photo }) {
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="text-sm font-semibold text-dark mb-3 w-full max-w-[400px]">Post Preview</h3>
+      <h3 className="section-title mb-3 w-full max-w-[400px]">Post Preview</h3>
       
       {/* Container for html2canvas to capture */}
       <div 
@@ -84,7 +84,7 @@ export default function PostPreview({ content, photo }) {
       </div>
       
       {/* Attribution */}
-      <div className="text-xs text-gray-400 mt-3">
+      <div className="text-xs text-white/40 mt-3">
         {photo._isVideo ? 'Video' : 'Photo'} by {photo.photographer} on Pexels
       </div>
     </div>

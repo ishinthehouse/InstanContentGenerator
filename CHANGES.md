@@ -10,14 +10,66 @@ Each phase is built on its own `feature/*` branch and merged deliberately —
 
 1. **Phase 1 — Slide schema migration** ✅ `feature/slide-schema-migration`
 2. **Phase 2 — Backend proxy** ✅ `feature/backend-proxy` (stacked on Phase 1)
-3. Phase 3 — Visual redesign (dark glassmorphic chrome, 3-column Plan/Produce/Polish)
+3. **Phase 3 — Visual redesign** ✅ `feature/visual-redesign` (stacked on Phase 2)
 4. Phase 4 — Layout engine + brand kit (IndexedDB-backed assets)
 5. Phase 5 — Scoped editor upgrades (inline `contentEditable` text editing)
 6. Phase 6 — Export upgrades (multi aspect-ratio, off-main-thread video)
 
-> **Branch stacking:** Phase 2 branches off Phase 1 (not `main`), since Phase 1
-> isn't merged yet and Phase 2 builds on its shared prompt/schema. Merge in order:
-> Phase 1 → `main`, then Phase 2 → `main`.
+> **Branch stacking:** each phase branches off the previous one (not `main`),
+> since none are merged yet and each builds on the last. Merge in order:
+> Phase 1 → `main`, then Phase 2, then Phase 3.
+
+---
+
+## Phase 3 — Visual redesign (dark glassmorphic workspace)
+
+**Branch:** `feature/visual-redesign` (stacked on `feature/backend-proxy`)
+**Goal:** turn the flat light form into a premium dark, glassmorphic **3-column
+design workspace** (Plan / Produce / Polish) — without touching app logic or the
+pixel-exact, html2canvas-captured output surfaces.
+
+### Theme foundation (centralized, low-churn)
+- `index.html` — added **Outfit** + **Sora** UI fonts (slide fonts unchanged).
+- `tailwind.config.js` — added `font-ui`/`font-display`, a `midnight` surface
+  scale, `royal`/`vivid` accents, `bg-brand-gradient` (indigo→pink) +
+  `bg-glow-radial`, and `shadow-glow`/`shadow-panel` utilities.
+- `src/index.css` — deep-midnight body with layered radial accents,
+  `color-scheme: dark` (native controls render dark), readable `option` color,
+  and reusable `@layer components` classes so each component stays terse:
+  `.glass-panel`, `.glass-panel-strong`, `.glass-input`, `.glass-select`,
+  `.btn-primary`, `.btn-ghost`, `.chip`, `.section-title`, `.field-label`.
+
+### Layout
+- `src/App.jsx` — rebuilt the shell: sticky glass header with a gradient logo
+  mark, and a responsive **3-column grid** (`xl:grid-cols-[plan|produce|polish]`,
+  stacks to one column below `xl`). Plan = inputs + media selection (TopicForm /
+  BulkUpload + PhotoGrid); Produce = the live preview canvas (sticky); Polish =
+  filters + export + Reels script. Friendly empty states fill each region.
+
+### Component re-skins (chrome only)
+- TopicForm, SettingsPanel, PhotoGrid, PhotoFilterSelector, ExportButtons,
+  ReelsScript, BulkUpload, GuideModal, and the **controls** of CarouselPreview
+  (header, font pills, dots, secondary button) all moved to the dark glass system.
+
+### Intentionally NOT restyled (correctness)
+- The `#post-preview` Instagram mock (PostPreview) and the `carousel-slide-*`
+  cards (SlideCard / VideoReelSlide) keep their realistic light styling — they're
+  the html2canvas/MediaRecorder capture targets, so changing them would change
+  exported output. Only their surrounding labels/controls were updated.
+- No new dependencies (CSS-only transitions; Framer Motion was never installed).
+
+### Verification
+- `npm run build` ✅ — all custom utilities/`@apply` resolve.
+- `npm run lint` — 11 errors, **all pre-existing** (unused imports + two known
+  setState-in-effect rules); none introduced by this phase.
+- **Live visual QA** via dev server + screenshots: single-post empty state, bulk
+  mode, Settings popover, and the mobile stacked layout — all dark, cohesive, and
+  legible (desktop 3-column and 375px mobile both verified).
+
+### Manual QA still recommended before merge
+- Generate real content (needs keys) and confirm the **light** PostPreview mock
+  and carousel slides still render/export correctly against the dark workspace,
+  and that the font/shuffle/download controls look right populated.
 
 ---
 

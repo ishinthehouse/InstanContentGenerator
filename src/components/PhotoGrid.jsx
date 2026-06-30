@@ -11,13 +11,13 @@ export default function PhotoGrid({ photos, selectedPhotoIds, onToggleSelect, is
   const isVideosMode = mediaMode === 'videos';
   if (isSearching) {
     return (
-      <div className="mb-6">
-        <h3 className="text-sm font-semibold text-dark mb-3">
+      <div className="glass-panel p-4">
+        <h3 className="section-title mb-3">
           {isVideosMode ? 'Finding videos...' : 'Finding photos...'}
         </h3>
         <div className="grid grid-cols-3 gap-2">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-            <div key={i} className="aspect-square bg-gray-100 animate-pulse rounded-md" />
+            <div key={i} className="aspect-square bg-white/[0.04] animate-pulse rounded-md" />
           ))}
         </div>
       </div>
@@ -31,10 +31,10 @@ export default function PhotoGrid({ photos, selectedPhotoIds, onToggleSelect, is
   const selectedCount = selectedPhotoIds?.length || 0;
 
   return (
-    <div className="mb-6">
+    <div className="glass-panel p-4">
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-dark">
+          <h3 className="section-title">
             {isVideosMode ? 'Select Videos' : 'Select Photos'}
           </h3>
           {selectedCount > 0 && (
@@ -43,7 +43,7 @@ export default function PhotoGrid({ photos, selectedPhotoIds, onToggleSelect, is
             </span>
           )}
         </div>
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-white/50">
           {selectedCount === 0 ? 'Tap to select' : `${selectedCount} selected · tap to toggle`}
         </span>
       </div>

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Sparkles } from 'lucide-react';
 import { SettingsProvider } from './context/SettingsContext';
 import SettingsPanel from './components/SettingsPanel';
 import TopicForm from './components/TopicForm';
@@ -108,154 +108,177 @@ function MainApp() {
 
   const hasSelection = selectedPhotos.length > 0;
 
+  const showPreview = currentContent && (primaryPhoto || hasSelection);
+
   return (
-    <div className="flex h-screen bg-[#f9fafb] overflow-hidden">
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
-        {/* Top Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10 flex-shrink-0">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen flex flex-col">
+      {/* Sticky glass header */}
+      <header className="sticky top-0 z-30 backdrop-blur-xl bg-midnight-900/70 border-b border-white/10">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-6 py-3.5 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-brand-gradient flex items-center justify-center shadow-glow-royal">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
             <div>
-              <h1 className="text-xl font-bold text-dark m-0 tracking-tight">InstaForge</h1>
-              <p className="text-xs text-gray-500 hidden sm:block">Automated Instagram Content Creation</p>
+              <h1 className="text-lg font-bold text-white m-0 tracking-tight font-display leading-none">InstaForge</h1>
+              <p className="text-[11px] text-white/45 hidden sm:block mt-0.5">AI social-media design workspace</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsGuideOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-600 text-xs font-semibold rounded-full border border-purple-100 hover:shadow-md transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-white/70 text-xs font-semibold rounded-full border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:text-white transition-all"
             >
               <HelpCircle className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Learn to use</span>
             </button>
             <SettingsPanel />
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Scrollable Workspace */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-          <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 xl:gap-10">
-            
-            {/* Center Column: Inputs & Search */}
-            <div className="flex-1 min-w-0">
-              {/* Mode Toggle */}
-              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1 mb-6">
-                <button
-                  onClick={() => setMode('single')}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                    mode === 'single'
-                      ? 'bg-white text-dark shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Single Post
-                </button>
-                <button
-                  onClick={() => setMode('bulk')}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                    mode === 'bulk'
-                      ? 'bg-white text-dark shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Bulk Upload
-                </button>
-              </div>
+      {/* Workspace */}
+      <main className="flex-1 px-4 md:px-6 py-6">
+        <div className="max-w-[1600px] mx-auto grid grid-cols-1 xl:grid-cols-[minmax(360px,400px)_minmax(0,1fr)_minmax(320px,360px)] gap-6 items-start">
 
-              {mode === 'single' ? (
-                <>
-                  <TopicForm
-                    onSubmit={handleGenerate}
-                    isGenerating={isGenerating}
-                    mediaMode={mediaMode}
-                    onMediaModeChange={handleMediaModeChange}
-                  />
-                  
-                  {aiError && (
-                    <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100 flex justify-between items-center">
-                      <span>{aiError}</span>
-                      <button onClick={() => lastFormData && handleGenerate(lastFormData)} className="text-xs font-semibold hover:underline">
-                        Try again
-                      </button>
-                    </div>
-                  )}
+          {/* ───── Plan: inputs & media selection ───── */}
+          <section className="space-y-5 min-w-0">
+            {/* Mode Toggle */}
+            <div className="flex items-center gap-1 bg-white/[0.04] border border-white/10 rounded-xl p-1">
+              <button
+                onClick={() => setMode('single')}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                  mode === 'single'
+                    ? 'bg-brand-gradient text-white shadow-glow'
+                    : 'text-white/50 hover:text-white/80'
+                }`}
+              >
+                Single Post
+              </button>
+              <button
+                onClick={() => setMode('bulk')}
+                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                  mode === 'bulk'
+                    ? 'bg-brand-gradient text-white shadow-glow'
+                    : 'text-white/50 hover:text-white/80'
+                }`}
+              >
+                Bulk Upload
+              </button>
+            </div>
 
-                  {pexelsError && (
-                    <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100 flex justify-between items-center">
-                      <span>{pexelsError}</span>
-                      <button onClick={handleRegeneratePhotos} className="text-xs font-semibold hover:underline">
-                        Try again
-                      </button>
-                    </div>
-                  )}
-
-                  {(isSearching || (photos && photos.length > 0)) && (
-                    <PhotoGrid
-                      photos={photos}
-                      selectedPhotoIds={selectedPhotos.map(p => p.id)}
-                      onToggleSelect={handleTogglePhoto}
-                      isSearching={isSearching}
-                      mediaMode={mediaMode}
-                    />
-                  )}
-
-                  {hasSelection && mode === 'single' && mediaMode === 'photos' && (
-                    <PhotoFilterSelector
-                      photos={selectedPhotos}
-                      onApplyFilter={setSelectedPhotos}
-                    />
-                  )}
-                </>
-              ) : (
-                <BulkUpload
-                  onProcessBulk={processBulk}
-                  isProcessing={isProcessing}
-                  progress={progress}
-                  results={results}
-                  bulkError={bulkError}
-                  onCancel={cancelBulk}
-                  onClearResults={clearResults}
-                  onSelectResult={handleSelectBulkResult}
+            {mode === 'single' ? (
+              <>
+                <TopicForm
+                  onSubmit={handleGenerate}
+                  isGenerating={isGenerating}
+                  mediaMode={mediaMode}
+                  onMediaModeChange={handleMediaModeChange}
                 />
-              )}
-            </div>
 
-            {/* Right Column: Previews & Export */}
-            <div className="w-full lg:w-[400px] xl:w-[420px] flex-shrink-0">
-              {currentContent && primaryPhoto && (
-                <PostPreview content={currentContent} photo={primaryPhoto} />
-              )}
+                {aiError && (
+                  <div className="p-4 bg-red-500/10 text-red-300 text-sm rounded-xl border border-red-500/20 flex justify-between items-center gap-3">
+                    <span>{aiError}</span>
+                    <button onClick={() => lastFormData && handleGenerate(lastFormData)} className="text-xs font-semibold hover:underline whitespace-nowrap">
+                      Try again
+                    </button>
+                  </div>
+                )}
 
-              {currentContent && hasSelection && (
-                <CarouselPreview content={currentContent} photos={selectedPhotos} />
-              )}
-              
-              {!currentContent && !hasSelection && !isGenerating && (
-                <div className="bg-white rounded-xl border border-dashed border-gray-300 h-64 flex items-center justify-center text-gray-400 text-sm">
-                  Generated post preview will appear here
-                </div>
-              )}
+                {pexelsError && (
+                  <div className="p-4 bg-red-500/10 text-red-300 text-sm rounded-xl border border-red-500/20 flex justify-between items-center gap-3">
+                    <span>{pexelsError}</span>
+                    <button onClick={handleRegeneratePhotos} className="text-xs font-semibold hover:underline whitespace-nowrap">
+                      Try again
+                    </button>
+                  </div>
+                )}
 
-              {currentContent && (
-                <>
-                  <ExportButtons 
-                    content={currentContent} 
-                    topic={currentTopic}
-                    onRegenerateCaption={handleRegenerateCaption}
-                    onRegeneratePhotos={handleRegeneratePhotos}
-                    isGenerating={isGenerating}
+                {(isSearching || (photos && photos.length > 0)) && (
+                  <PhotoGrid
+                    photos={photos}
+                    selectedPhotoIds={selectedPhotos.map(p => p.id)}
+                    onToggleSelect={handleTogglePhoto}
                     isSearching={isSearching}
+                    mediaMode={mediaMode}
                   />
-                  <ReelsScript content={currentContent} />
-                </>
-              )}
-            </div>
-            
-          </div>
-        </main>
-        
-      </div>
-      
+                )}
+              </>
+            ) : (
+              <BulkUpload
+                onProcessBulk={processBulk}
+                isProcessing={isProcessing}
+                progress={progress}
+                results={results}
+                bulkError={bulkError}
+                onCancel={cancelBulk}
+                onClearResults={clearResults}
+                onSelectResult={handleSelectBulkResult}
+              />
+            )}
+          </section>
+
+          {/* ───── Produce: live preview canvas ───── */}
+          <section className="min-w-0 xl:sticky xl:top-24">
+            {showPreview ? (
+              <div className="space-y-6">
+                {currentContent && primaryPhoto && (
+                  <PostPreview content={currentContent} photo={primaryPhoto} />
+                )}
+                {currentContent && hasSelection && (
+                  <CarouselPreview content={currentContent} photos={selectedPhotos} />
+                )}
+              </div>
+            ) : (
+              <div className="glass-panel min-h-[420px] flex flex-col items-center justify-center text-center px-6 py-12">
+                <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mb-4">
+                  <Sparkles className="w-6 h-6 text-white/30" />
+                </div>
+                <p className="text-sm font-medium text-white/70">
+                  {isGenerating ? 'Crafting your content…' : 'Your post preview will appear here'}
+                </p>
+                <p className="text-xs text-white/35 mt-1 max-w-[240px]">
+                  {mode === 'single'
+                    ? 'Describe a topic and pick media to see a live carousel.'
+                    : 'Select a generated result to preview it here.'}
+                </p>
+              </div>
+            )}
+          </section>
+
+          {/* ───── Polish: design controls & export ───── */}
+          <section className="space-y-5 min-w-0">
+            {hasSelection && mode === 'single' && mediaMode === 'photos' && (
+              <PhotoFilterSelector
+                photos={selectedPhotos}
+                onApplyFilter={setSelectedPhotos}
+              />
+            )}
+
+            {currentContent ? (
+              <>
+                <ExportButtons
+                  content={currentContent}
+                  topic={currentTopic}
+                  onRegenerateCaption={handleRegenerateCaption}
+                  onRegeneratePhotos={handleRegeneratePhotos}
+                  isGenerating={isGenerating}
+                  isSearching={isSearching}
+                />
+                <ReelsScript content={currentContent} />
+              </>
+            ) : (
+              <div className="glass-panel p-6 text-center">
+                <p className="text-xs text-white/40">
+                  Design controls, export options, and your Reels script will show up here once content is generated.
+                </p>
+              </div>
+            )}
+          </section>
+
+        </div>
+      </main>
+
       <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
     </div>
   );
