@@ -51,6 +51,13 @@ pixel-exact, html2canvas-captured output surfaces.
   ReelsScript, BulkUpload, GuideModal, and the **controls** of CarouselPreview
   (header, font pills, dots, secondary button) all moved to the dark glass system.
 
+### "Learn to use" guide (content refresh)
+- Rewrote the GuideModal copy to match the app after Phases 1–3: the Plan /
+  Produce / Polish column names, the Repurpose-a-link input, variable 3–10 slide
+  count, Photos-or-Videos + reel export, and — most importantly — corrected the
+  Setup section from "you'll need your own API keys" to "single posts work out of
+  the box via the free hosted generator; add your own key for unlimited + bulk."
+
 ### Intentionally NOT restyled (correctness)
 - The `#post-preview` Instagram mock (PostPreview) and the `carousel-slide-*`
   cards (SlideCard / VideoReelSlide) keep their realistic light styling — they're

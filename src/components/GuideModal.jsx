@@ -22,7 +22,7 @@ export default function GuideModal({ isOpen, onClose }) {
             </div>
             <div>
               <h2 className="text-lg font-bold text-white font-display">Welcome to InstaForge</h2>
-              <p className="text-xs text-white/50 font-medium">Your AI-powered Instagram factory</p>
+              <p className="text-xs text-white/50 font-medium">Your AI social-media design workspace</p>
             </div>
           </div>
           <button
@@ -39,17 +39,17 @@ export default function GuideModal({ isOpen, onClose }) {
           <section>
             <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-3 uppercase tracking-wider">
               <span className="w-6 h-6 rounded bg-purple-100 text-purple-600 flex items-center justify-center text-xs">1</span>
-              Single Post Generation
+              Plan — describe your post
             </h3>
             <p className="text-sm text-white/70 leading-relaxed mb-4">
-              Type a topic in the center column. InstaForge will use AI to write a captivating caption, find relevant hashtags, structure a Reels script, and search for high-quality background images from Pexels.
+              In the <strong>Plan</strong> column on the left, describe a topic (or paste a blog, article, or YouTube link to <strong>repurpose</strong> it into a post). Pick a tone, choose <strong>Photos or Videos</strong>, and set how many slides you want (<strong>3–10</strong>). InstaForge's AI writes the caption, hashtags, and a slide-by-slide script, then pulls matching media from Pexels.
             </p>
             <div className="bg-white/[0.04] p-4 rounded-xl border border-white/10 flex gap-4">
               <ImageIcon className="w-6 h-6 text-insta flex-shrink-0" />
               <div>
-                <p className="text-sm font-semibold text-white mb-1">Pick your photos</p>
+                <p className="text-sm font-semibold text-white mb-1">Pick your media</p>
                 <p className="text-xs text-white/50">
-                  Click on any photo from the search results to select it. You can select multiple photos to spread them across your carousel slides.
+                  Tap any photo or video in the results to select it. Select several and they spread across your carousel slides (or reel clips).
                 </p>
               </div>
             </div>
@@ -58,19 +58,19 @@ export default function GuideModal({ isOpen, onClose }) {
           <section>
             <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-3 uppercase tracking-wider">
               <span className="w-6 h-6 rounded bg-orange-100 text-orange-600 flex items-center justify-center text-xs">2</span>
-              Design & Export
+              Produce & Polish
             </h3>
             <p className="text-sm text-white/70 leading-relaxed mb-4">
-              Once your text is generated and photos are selected, the Right Column comes alive. It automatically builds a 5-slide Carousel mapping your Reels script across the images.
+              The center <strong>Produce</strong> column shows a live carousel (or animated video reel) that maps your script across the media. Fine-tune it with the controls above the carousel and in the <strong>Polish</strong> column on the right.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="bg-white/[0.04] border border-white/10 p-3 rounded-lg">
-                <p className="text-xs font-bold text-white mb-1">Apply Filters</p>
-                <p className="text-[11px] text-white/50">Choose from 18 Cloudinary presets to give your photos an Instagram-ready aesthetic.</p>
+                <p className="text-xs font-bold text-white mb-1">Fonts & filters</p>
+                <p className="text-[11px] text-white/50">Swap the slide typography instantly, shuffle media, and apply Cloudinary photo filters (add a cloud name in Settings).</p>
               </div>
               <div className="bg-white/[0.04] border border-white/10 p-3 rounded-lg">
-                <p className="text-xs font-bold text-white mb-1">Change Typography</p>
-                <p className="text-[11px] text-white/50">Use the font selector above the carousel to instantly swap the text style on all slides.</p>
+                <p className="text-xs font-bold text-white mb-1">Export anywhere</p>
+                <p className="text-[11px] text-white/50">Download slides as PNGs or rendered reels (MP4/WebM) with captions baked in, and copy your caption + hashtags in one click.</p>
               </div>
             </div>
             <button className="mt-4 w-full py-2.5 bg-white/[0.06] border border-white/10 text-white/80 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 cursor-default">
@@ -89,10 +89,10 @@ export default function GuideModal({ isOpen, onClose }) {
                 <div>
                   <p className="text-sm font-semibold text-white mb-2">Have a content calendar?</p>
                   <p className="text-xs text-white/70 leading-relaxed mb-3">
-                    Switch to the <strong>Bulk Upload</strong> tab. Drop an Excel (.xlsx) or CSV file with your planned posts. Ensure you have columns named <code>caption</code>, <code>post content</code>, <code>keyword</code>, and <code>cta</code>.
+                    Switch to the <strong>Bulk Upload</strong> tab and drop an Excel (.xlsx) or CSV file with your planned posts. Use columns named <code>caption</code>, <code>post content</code>, <code>keyword</code>, and <code>cta</code>.
                   </p>
                   <p className="text-xs text-white/70 leading-relaxed">
-                    Check the "Use AI" box to let InstaForge turn brief topics into full posts, or uncheck it to use your spreadsheet data exactly as-is. Hit Generate and watch it build your entire week's content!
+                    Keep <strong>Use AI</strong> on to turn brief topics into full posts, or turn it off to use your spreadsheet data as-is. Generate, then download the whole batch as a ZIP of slides or reels. <span className="text-white/50">Bulk uses AI in a loop, so it needs your own API key (see Setup).</span>
                   </p>
                 </div>
               </div>
@@ -102,18 +102,18 @@ export default function GuideModal({ isOpen, onClose }) {
           <section>
             <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-3 uppercase tracking-wider">
               <span className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-xs">4</span>
-              Important Setup
+              Setup — mostly optional
             </h3>
             <div className="flex items-start gap-3 bg-white/[0.04] p-4 rounded-xl border border-white/10">
               <Settings className="w-5 h-5 text-white/40 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs text-white/70 leading-relaxed">
-                  Before you start, click the <strong>Settings</strong> icon in the top right. You'll need to provide your own API keys for:
+                  Open <strong>Settings</strong> (gear, top right). Single posts work out of the box — leave the AI key blank to use the <strong>free hosted generator</strong> (daily limit). Add keys for more:
                 </p>
                 <ul className="text-xs text-white/50 mt-2 list-disc list-inside space-y-1">
-                  <li>An AI Provider (Claude, OpenAI, or Gemini)</li>
-                  <li>Pexels (for image search)</li>
-                  <li>Cloudinary Cloud Name (for photo filters)</li>
+                  <li><strong className="text-white/70">AI Provider key</strong> (Claude, OpenAI, or Gemini) — unlimited generations + bulk</li>
+                  <li><strong className="text-white/70">Pexels key</strong> — required to search photos &amp; videos</li>
+                  <li><strong className="text-white/70">Cloudinary cloud name</strong> — optional, enables photo filters</li>
                 </ul>
               </div>
             </div>
