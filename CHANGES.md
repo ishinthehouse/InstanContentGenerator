@@ -11,13 +11,78 @@ Each phase is built on its own `feature/*` branch and merged deliberately —
 1. **Phase 1 — Slide schema migration** ✅ `feature/slide-schema-migration`
 2. **Phase 2 — Backend proxy** ✅ `feature/backend-proxy` (stacked on Phase 1)
 3. **Phase 3 — Visual redesign** ✅ `feature/visual-redesign` (stacked on Phase 2)
-4. Phase 4 — Layout engine + brand kit (IndexedDB-backed assets)
-5. Phase 5 — Scoped editor upgrades (inline `contentEditable` text editing)
-6. Phase 6 — Export upgrades (multi aspect-ratio, off-main-thread video)
+4. **Phase 4 — Commercial site & animations** ✅ `feature/commercial-site` (stacked on Phase 3)
+5. Phase 5 — Layout engine + brand kit (IndexedDB-backed assets)
+6. Phase 6 — Scoped editor upgrades (inline `contentEditable` text editing)
+7. Phase 7 — Export upgrades (multi aspect-ratio, off-main-thread video)
 
 > **Branch stacking:** each phase branches off the previous one (not `main`),
 > since none are merged yet and each builds on the last. Merge in order:
-> Phase 1 → `main`, then Phase 2, then Phase 3.
+> Phase 1 → `main`, then Phase 2, then Phase 3, then Phase 4.
+
+---
+
+## Phase 4 — Commercial site & animations
+
+**Branch:** `feature/commercial-site` (stacked on `feature/visual-redesign`)
+**Goal:** graduate from "a tool at a URL" to a commercial product website:
+a marketing landing page, pricing page, unified navigation, smooth
+framer-motion animations, SEO metadata, and a proper 404 — with the existing
+workspace living at `/studio`.
+
+### New dependencies (deliberate scope decision)
+- **react-router-dom ^7** — multi-page routing (`/`, `/pricing`, `/studio`, 404).
+- **framer-motion ^12** — page transitions, scroll-reveals, hover/float
+  micro-interactions. `MotionConfig reducedMotion="user"` respects the OS
+  "reduce motion" accessibility setting globally.
+
+### New pages (`src/pages/`)
+- **Landing.jsx** (`/`) — hero with animated gradient headline + floating CSS
+  slide mockup and status chips; 6-card feature grid (all real features);
+  3-step "How it works" (Plan/Produce/Polish); pricing teaser; animated FAQ
+  accordion (5 honest Q&As); every section scroll-reveals. No fabricated
+  testimonials or stats.
+- **Pricing.jsx** (`/pricing`) — honest 2-tier comparison: Free (hosted, daily
+  limit) vs Bring-your-own-key (unlimited + bulk, pay provider at cost).
+- **Studio.jsx** (`/studio`) — the entire existing workspace moved out of
+  App.jsx unchanged (state, handlers, 3-column grid).
+- **NotFound.jsx** (`*`) — gradient 404 with a home link.
+
+### New shared components (`src/components/marketing/`)
+- **NavBar.jsx** — unified sticky glass nav on every page: brand, center links
+  (Features / How it works / Pricing), and a context-aware right side —
+  marketing pages get an "Open Studio" CTA; `/studio` gets the Learn-to-use
+  button + Settings gear (GuideModal now lives here).
+- **Footer.jsx** — brand blurb, Product/Create link columns, Pexels credit,
+  "Not affiliated with Instagram or Meta" line. Marketing pages only.
+- **motion.jsx** — `PageTransition`, `Reveal` (scroll), `Floating` primitives.
+
+### Infrastructure
+- **App.jsx** → router shell: `AnimatePresence` page transitions, a
+  `ScrollManager` (hash links smooth-scroll, page changes reset to top),
+  footer suppressed on `/studio`.
+- **main.jsx** — wrapped in `BrowserRouter`.
+- **vercel.json** — added SPA rewrite `/((?!api/).*) → /index.html` so deep
+  links (`/pricing`, `/studio`) don't 404 on Vercel; `api/*` explicitly
+  excluded so the Phase 2 serverless functions keep working.
+- **index.html** — real SEO: title, meta description, theme-color, Open Graph
+  + Twitter card tags.
+
+### Verification
+- `npm run build` ✅ · `npm run lint` — 10 errors, all pre-existing (count went
+  down from 11; zero errors in any new file).
+- **Live preview walkthrough with screenshots:** landing hero/features/FAQ
+  (accordion open/close animated), footer, pricing page via nav click (routing
+  + page transition), studio via "Open Studio" (workspace intact, nav swaps to
+  Learn-to-use + Settings), 404 page, and the mobile hero. **Zero console
+  errors.**
+
+### Manual QA still recommended before merge
+- On a Vercel preview: hit `/pricing` and `/studio` directly (cold URL) to
+  confirm the SPA rewrite, and confirm `/api/generate` still routes to the
+  function, not index.html.
+- Generate real content in `/studio` to confirm the workspace behaves
+  identically post-move.
 
 ---
 

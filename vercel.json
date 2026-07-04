@@ -3,5 +3,8 @@
   "functions": {
     "api/generate.js": { "maxDuration": 60 },
     "api/repurpose.js": { "maxDuration": 30 }
-  }
+  },
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
 }
